@@ -1,0 +1,120 @@
+import java.util.*;
+
+// ========== FOOD ITEM CLASS ==========
+class FoodItem {
+    private String name;
+    private int price;
+
+    public FoodItem(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getName() { return name; }
+    public int getPrice() { return price; }
+}
+
+// ========== MENU CLASS ==========
+class Menu {
+    private List<FoodItem> items = new ArrayList<>();
+
+    public Menu() {
+        items.add(new FoodItem("Burger", 120));
+        items.add(new FoodItem("Pizza", 250));
+        items.add(new FoodItem("Pasta", 180));
+        items.add(new FoodItem("Sandwich", 100));
+    }
+
+    public void displayMenu() {
+        System.out.println("\n---- MENU ----");
+        for (int i = 0; i < items.size(); i++) {
+            System.out.println((i + 1) + ". " + items.get(i).getName() + " - ₹" + items.get(i).getPrice());
+        }
+    }
+
+    public FoodItem getItem(int index) {
+        if (index >= 0 && index < items.size()) {
+            return items.get(index);
+        }
+        return null;
+    }
+}
+
+// ========== ORDER CLASS ==========
+class Order {
+    private List<FoodItem> orderItems = new ArrayList<>();
+
+    public void addItem(FoodItem item) {
+        orderItems.add(item);
+    }
+
+    public int getTotal() {
+        int total = 0;
+        for (FoodItem item : orderItems) {
+            total += item.getPrice();
+        }
+        return total;
+    }
+
+    public void showOrder() {
+        System.out.println("\nYour Order:");
+        for (FoodItem item : orderItems) {
+            System.out.println("- " + item.getName());
+        }
+        System.out.println("Total Amount: ₹" + getTotal());
+    }
+}
+
+// ========== MULTITHREADING ==========
+class DeliveryTask implements Runnable {
+    public void run() {
+        try {
+            System.out.println("\nPreparing your food...");
+            Thread.sleep(2000);
+            System.out.println("Out for delivery...");
+            Thread.sleep(2000);
+            System.out.println("Delivered successfully! ");
+        } catch (Exception e) {}
+    }
+}
+
+// ========== MAIN CLASS ==========
+public class Main {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        Menu menu = new Menu();
+        Order order = new Order();
+
+        System.out.println("=== Welcome to Food Delivery App ===");
+
+        while (true) {
+            menu.displayMenu();
+            System.out.print("Enter item number to add (0 to finish): ");
+            int choice = sc.nextInt();
+
+            if (choice == 0) break;
+
+            FoodItem item = menu.getItem(choice - 1);
+
+            if (item != null) {
+                order.addItem(item);
+                System.out.println(item.getName() + " added to cart.");
+            } else {
+                System.out.println("Invalid choice!");
+            }
+        }
+
+        order.showOrder();
+
+        System.out.print("\nConfirm order? (yes/no): ");
+        String confirm = sc.next();
+
+        if (confirm.equalsIgnoreCase("yes")) {
+            Thread t = new Thread(new DeliveryTask());
+            t.start();
+        } else {
+            System.out.println("Order cancelled.");
+        }
+    }
+}
